@@ -38,7 +38,8 @@ const MainCall = () => {
 	DisneyWorldMagicKingdom.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Magic Kingdom -------------------------------------------------------");
         rideTimes.forEach((ride) => {
-			OurMongo.insertOne(ride.name, {status:ride.status, waitTime:ride.waitTime});
+			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
             DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
@@ -49,7 +50,8 @@ const MainCall = () => {
 	DisneyWorldAnimalKingdom.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Animal Kingdom ------------------------------------------------------");
         rideTimes.forEach((ride) => {
-			OurMongo.insertOne(ride.name, {status:ride.status, waitTime:ride.waitTime});
+			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
             DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
@@ -60,7 +62,8 @@ const MainCall = () => {
 	DisneyWorldEpcot.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Epcot ---------------------------------------------------------------");
         rideTimes.forEach((ride) => {
-			OurMongo.insertOne(ride.name, {status:ride.status, waitTime:ride.waitTime});
+			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
             DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
@@ -71,7 +74,8 @@ const MainCall = () => {
 	DisneyWorldHollywoodStudios.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Hollywood Studios ---------------------------------------------------");
         rideTimes.forEach((ride) => {
-			OurMongo.insertOne(ride.name, {status:ride.status, waitTime:ride.waitTime});
+			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
             DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
