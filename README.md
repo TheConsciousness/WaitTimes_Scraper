@@ -4,9 +4,9 @@ Application used to capture and store wait times for Disney World and Universal 
 Node Wait Times Requirements
 Backlog:
 
-~~(5) Retrieve every rides wait times once per minute.~~
+- (5) ~~Retrieve every rides wait times once per minute.~~
 - Develop a strategy for purging wait times outside operating hours.
-~~- Store every rides timestamp and wait time into MongoDB.~~
+- (2) ~~Store every rides timestamp and wait time into MongoDB.~~
 - Create API for retrieval of stored results.
 - Display each rides wait time in their own graph.
 - Display EVERY rides wait time in one graph.
