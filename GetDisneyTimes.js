@@ -27,9 +27,7 @@ const DisneyWorldEpcot = new Themeparks.Parks.WaltDisneyWorldEpcot({scheduleDays
 const DisneyWorldHollywoodStudios = new Themeparks.Parks.WaltDisneyWorldHollywoodStudios({scheduleDaysToReturn:1});
 
 // Our main function
-const MainCall = () => {	
-	//startTime = parseInt(moment().valueOf());
-	
+const MainCall = () => {		
 	if (!OurMongo.isConnected()) {
 		OurMongo.connect();
 	}
@@ -38,9 +36,9 @@ const MainCall = () => {
 	DisneyWorldMagicKingdom.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Magic Kingdom -------------------------------------------------------");
         rideTimes.forEach((ride) => {
+            DEBUG_MODE && console.log(`MK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-            DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
         console.log("Magic Kingdom GetWaitTimes() failed: " + error);
@@ -50,9 +48,9 @@ const MainCall = () => {
 	DisneyWorldAnimalKingdom.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Animal Kingdom ------------------------------------------------------");
         rideTimes.forEach((ride) => {
+            DEBUG_MODE && console.log(`AK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-            DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
         console.log("Animal Kingdom GetWaitTimes() failed: " + error);
@@ -62,9 +60,9 @@ const MainCall = () => {
 	DisneyWorldEpcot.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Epcot ---------------------------------------------------------------");
         rideTimes.forEach((ride) => {
+            DEBUG_MODE && console.log(`Epcot: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-            DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
         console.log("Epcot GetWaitTimes() failed: " + error);
@@ -74,20 +72,14 @@ const MainCall = () => {
 	DisneyWorldHollywoodStudios.GetWaitTimes().then((rideTimes) => {
 		DEBUG_MODE && console.log("--- Hollywood Studios ---------------------------------------------------");
         rideTimes.forEach((ride) => {
+            DEBUG_MODE && console.log(`HS: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 			let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-            DEBUG_MODE && console.log(`${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
         });
     }).catch((error) => {
         console.log("Hollywood Studios GetWaitTimes() failed: " + error);
     });
-	
-			
-	// Below is not accurate
-	//timeTook = parseInt(moment().valueOf()) - startTime;
-	//console.log(timeTook + 'ms to query and insert');
 }
 
 const OurMongo = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
 setInterval(MainCall, refreshRate); 
-
