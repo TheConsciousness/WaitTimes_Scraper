@@ -15,7 +15,10 @@ Themeparks.Settings.Cache = __dirname + "/themeparks.db";
 let DEBUG_MODE;
 let timeTook = 0;
 let refreshRate = 10000;
-if (process.env.ENVIRONMENT == 'dev' || process.env.ENVIRONMENT == 'test') { DEBUG_MODE = true; }
+
+// Environment Variables
+if (!process.env.ENVIRONMENT) { console.log("No ENV file, quitting."); process.exit(); }
+if (process.env.ENVIRONMENT == 'dev' || process.env.ENVIRONMENT == 'test') DEBUG_MODE = true; 
 
 // Parks - NOTE: Only create parks ONCE
 const DisneyWorldMagicKingdom = new Themeparks.Parks.WaltDisneyWorldMagicKingdom({scheduleDaysToReturn:1});
@@ -23,8 +26,7 @@ const DisneyWorldAnimalKingdom = new Themeparks.Parks.WaltDisneyWorldAnimalKingd
 const DisneyWorldEpcot = new Themeparks.Parks.WaltDisneyWorldEpcot({scheduleDaysToReturn:1});
 const DisneyWorldHollywoodStudios = new Themeparks.Parks.WaltDisneyWorldHollywoodStudios({scheduleDaysToReturn:1});
 
-
-
+// Our main function
 const MainCall = () => {	
 	//startTime = parseInt(moment().valueOf());
 	
