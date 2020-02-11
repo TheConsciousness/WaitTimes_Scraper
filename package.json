@@ -1,0 +1,15 @@
+{
+  "name": "node_waittimes",
+  "version": "1.0.0",
+  "description": "Theme park wait time system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TheConsciousness",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.24.0",
+    "themeparks": "^5.1.33"
+  }
+}
