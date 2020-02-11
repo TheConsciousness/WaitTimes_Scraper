@@ -8,14 +8,14 @@
 const dotenv = require('dotenv').config()
 const Themeparks = require("themeparks");
 const moment = require('moment');
-const MongoClient = require('mongodb').MongoClient;
+const MongoDB = require('./MongoDB.js')
 
 // Settings
 Themeparks.Settings.Cache = __dirname + "/themeparks.db";
-let startTime, DEBUG_MODE;
+let DEBUG_MODE;
 let timeTook = 0;
 let refreshRate = 10000;
-if (process.env.ENVIRONMENT == 'dev' || process.env.ENVIRONMENT == 'test') DEBUG_MODE = true;
+if (process.env.ENVIRONMENT == 'dev' || process.env.ENVIRONMENT == 'test') { DEBUG_MODE = true; }
 
 // Parks - NOTE: Only create parks ONCE
 const DisneyWorldMagicKingdom = new Themeparks.Parks.WaltDisneyWorldMagicKingdom({scheduleDaysToReturn:1});
@@ -23,38 +23,7 @@ const DisneyWorldAnimalKingdom = new Themeparks.Parks.WaltDisneyWorldAnimalKingd
 const DisneyWorldEpcot = new Themeparks.Parks.WaltDisneyWorldEpcot({scheduleDaysToReturn:1});
 const DisneyWorldHollywoodStudios = new Themeparks.Parks.WaltDisneyWorldHollywoodStudios({scheduleDaysToReturn:1});
 
-class MongoDB {
-	/* this.client
-	   this.db
-	*/
-	constructor(url, dbName) {
-		this.url = url;
-		this.client = new MongoClient(url, { useUnifiedTopology: true });
-		this.dbName = dbName;
-	}	
-	connect() {
-		DEBUG_MODE && console.log("MongoDB connect()");
-		this.client.connect((err) => {
-			if (err) {
-				console.log('MongoClient.connect() error: ' + err);
-			}
-			this.db = this.client.db(this.dbName);
-		});
-	}
-	isConnected() {
-		return !!this.client && !!this.client.topology && this.client.topology.isConnected();
-	}
-	insertOne(collName, row) {
-		DEBUG_MODE && console.log("MongoDB insertOne()");
-		this.db.collection(collName).insertOne(row, (err, res) => {
-			if (err) {
-				console.log('insertOne() failed for '+collName+': ' + err);
-				return false;
-			}
-			return true;
-		});
-	}
-}
+
 
 const MainCall = () => {	
 	//startTime = parseInt(moment().valueOf());
