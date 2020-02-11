@@ -27,6 +27,8 @@ class MongoDB {
 		return !!this.client && !!this.client.topology && this.client.topology.isConnected();
 	}
 	insertOne(collName, row) {
+		if (!this.isConnected()) { return "Not connected to Mongo."; };
+		
 		DEBUG_MODE && console.log("MongoDB insertOne()");
 		this.db.collection(collName).insertOne(row, (err, res) => {
 			if (err) {
