@@ -1,8 +1,9 @@
 # WaitTimes Scraper
 Application used to capture and store wait times for Disney World and Universal Studios rides.
 
-Node Wait Times Requirements
-Backlog:
+## Wait Times Project Requirements
+
+### Backlog:
 
 - (5) ~~Retrieve every rides wait times once per minute.~~
 - Develop a strategy for purging wait times outside operating hours.
