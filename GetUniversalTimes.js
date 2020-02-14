@@ -1,5 +1,5 @@
 // GetUniversalTimes.js
-// Run as service or cronjob
+// 
 // Function: Retrieve every rides wait times once per minute.
 //
 // Universal Studios Florida
@@ -25,54 +25,73 @@ const UniversalStudios = new Themeparks.Parks.UniversalStudiosFlorida({scheduleD
 const UniversalIslands = new Themeparks.Parks.UniversalIslandsOfAdventure({scheduleDaysToReturn:1});
 const VolcanoBay = new Themeparks.Parks.UniversalVolcanoBay({scheduleDaysToReturn:1});
 
-// Our main function
-const MainCall = () => {	
 
-	if (!OurMongo.isConnected()) {
-		OurMongo.connect();
+class UniversalTimes {
+	constructor(MongoDBObj) {
+		this.MongoDB = MongoDBObj;
 	}
-	 
-	// Universal Studios
-	UniversalStudios.GetWaitTimes().then((rideTimes) => {
-		DEBUG_MODE && console.log("--- Universal Studios -------------------------------------------------------");
-        rideTimes.forEach((ride) => {
-            DEBUG_MODE && console.log(`USO: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
-			
-			let rideNameParsed = ride.name.replace(/[™℠®']/g, '');
-			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-        });
-    }).catch((error) => {
-		
-        console.log("Universal Studios GetWaitTimes() failed: " + error);
-    });
 	
-	// Universal Islands
-	UniversalIslands.GetWaitTimes().then((rideTimes) => {
-		DEBUG_MODE && console.log("--- Universal Islands ------------------------------------------------------");
-        rideTimes.forEach((ride) => {
-            DEBUG_MODE && console.log(`IOA: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+	GetUSO() {
+		return new Promise((resolve,reject) => {
+			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
 			
-			let rideNameParsed = ride.name.replace(/[™℠®']/g, '');
-			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-        });
-    }).catch((error) => {
-        console.log("Universal Islands GetWaitTimes() failed: " + error);
-    });
-	
-	// Volcano Bay
-	VolcanoBay.GetWaitTimes().then((rideTimes) => {
-		DEBUG_MODE && console.log("--- Volcano Bay ---------------------------------------------------------------");
-        rideTimes.forEach((ride) => {
-            DEBUG_MODE && console.log(`VB: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+			UniversalStudios.GetWaitTimes().then((rideTimes) => {
+				DEBUG_MODE && console.log("--- Universal Studios -------------------------------------------------------");
+				rideTimes.forEach((ride) => {
+					DEBUG_MODE && console.log(`USO: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+				});
+				DEBUG_MODE && console.log('GetUSO() Complete');
+				resolve(this);
+			}).catch((error) => {
+				console.log("GetUSO GetWaitTimes() failed: " + error);
+				reject(this);
+			});
+		});
+	}
+	GetIOA() {
+		return new Promise((resolve,reject) => {
+			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
 			
-			let rideNameParsed = ride.name.replace(/[™℠®']/g, '');
-			OurMongo.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
-        });
-    }).catch((error) => {
-        console.log("Volcano Bay GetWaitTimes() failed: " + error);
-    });
+			UniversalIslands.GetWaitTimes().then((rideTimes) => {
+				DEBUG_MODE && console.log("--- Islands of Adventure ------------------------------------------");
+				rideTimes.forEach((ride) => {
+					DEBUG_MODE && console.log(`IOA: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+				});
+				DEBUG_MODE && console.log('GetIOA() Complete');
+				resolve(this);
+			}).catch((error) => {
+				console.log("GetIOA GetWaitTimes() failed: " + error);
+				reject(this);
+			});
+		});
+	}
+	GetVB() {
+		return new Promise((resolve,reject) => {
+			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
+			
+			VolcanoBay.GetWaitTimes().then((rideTimes) => {
+				DEBUG_MODE && console.log("--- Volcano Bay ------------------------------------------");
+				rideTimes.forEach((ride) => {
+					DEBUG_MODE && console.log(`VB: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+				});
+				DEBUG_MODE && console.log('GetVB() Complete');
+				resolve(this);
+			}).catch((error) => {
+				console.log("GetVB GetWaitTimes() failed: " + error);
+				reject(this);
+			});
+		});
+	}
 }
 
-const OurMongo = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
-setInterval(MainCall, refreshRate); 
+module.exports = UniversalTimes;
+
+//const OurMongo = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
+//setInterval(MainCall, refreshRate); 
 
