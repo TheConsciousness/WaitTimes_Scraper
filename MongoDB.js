@@ -15,13 +15,18 @@ class MongoDB {
 		this.dbName = dbName;
 	}	
 	connect() {
+		if (this.isConnected()) { return; };
+			
 		DEBUG_MODE && console.log("MongoDB connect()");
-		this.client.connect((err) => {
+		this.client.connect((err, db) => {
 			if (err) {
 				console.log('MongoClient.connect() error: ' + err);
 			}
 			this.db = this.client.db(this.dbName);
 		});
+	}
+	close() {
+		this.client.close();
 	}
 	isConnected() {
 		return !!this.client && !!this.client.topology && this.client.topology.isConnected();
@@ -33,9 +38,7 @@ class MongoDB {
 		this.db.collection(collName).insertOne(row, (err, res) => {
 			if (err) {
 				console.log('insertOne() failed for '+collName+': ' + err);
-				return false;
 			}
-			return true;
 		});
 	}
 }
