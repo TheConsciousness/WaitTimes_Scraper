@@ -41,7 +41,7 @@ class DisneyTimes {
 				 rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`MK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
 				});
 				
 				DEBUG_MODE && console.log('gotmk() complete');
@@ -60,7 +60,7 @@ class DisneyTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`AK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
 				});
 				console.log('gotak() complete');
 				resolve(this);
@@ -79,7 +79,7 @@ class DisneyTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`Epcot: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && console.log('gotepcot() complete');
 				resolve(this);
@@ -98,7 +98,7 @@ class DisneyTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`HS: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne(rideNameParsed, {status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && console.log('getHS() complete');
 				resolve(this);
