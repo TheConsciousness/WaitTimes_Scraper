@@ -10,7 +10,7 @@ const GetUniversalTimes = require('./GetUniversalTimes.js')
 const GetDisneyTimes = require('./GetDisneyTimes.js')
 const MongoDBObj = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
 
-const refreshRate = 10000;
+const refreshRate = 60000;
 
 // she ain't pretty, but she seaworthy
 const GetAllTimes = () => {

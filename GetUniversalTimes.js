@@ -7,7 +7,7 @@
 
 const dotenv = require('dotenv').config()
 const Themeparks = require("themeparks");
-const moment = require('moment');
+const moment = require('moment-timezone');
 const MongoDB = require('./MongoDB.js')
 
 // Settings
@@ -40,7 +40,7 @@ class UniversalTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`USO: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Universal Studios', status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && console.log('GetUSO() Complete');
 				resolve(this);
@@ -59,7 +59,7 @@ class UniversalTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`IOA: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Islands Of Adventure', status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && console.log('GetIOA() Complete');
 				resolve(this);
@@ -78,7 +78,7 @@ class UniversalTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && console.log(`VB: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Volcano Bay', status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && console.log('GetVB() Complete');
 				resolve(this);
