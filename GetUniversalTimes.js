@@ -5,16 +5,14 @@
 // Universal Studios Florida
 //========================================================================================
 
-const dotenv = require('dotenv').config()
+const dotenv = require('dotenv').config();
 const Themeparks = require("themeparks");
 const moment = require('moment-timezone');
-const MongoDB = require('./MongoDB.js')
+const MongoDB = require('./MongoDB.js');
 
 // Settings
 Themeparks.Settings.Cache = __dirname + "/themeparks.db";
-let DEBUG_MODE;
-let timeTook = 0;
-let refreshRate = 10000;
+let DEBUG_MODE = false;
 
 // Environment Variables
 if (!process.env.ENVIRONMENT) { console.log("No ENV file, quitting."); process.exit(); }
@@ -91,7 +89,3 @@ class UniversalTimes {
 }
 
 module.exports = UniversalTimes;
-
-//const OurMongo = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
-//setInterval(MainCall, refreshRate); 
-

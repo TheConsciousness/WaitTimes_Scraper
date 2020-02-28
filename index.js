@@ -34,4 +34,6 @@ const GetAllTimes = () => {
 	))
 }
 
+console.log("WaitTimes Scraper started.")
+GetAllTimes();
 setInterval(GetAllTimes, refreshRate); 
