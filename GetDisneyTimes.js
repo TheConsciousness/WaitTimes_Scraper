@@ -9,15 +9,34 @@ const dotenv = require('dotenv').config()
 const Themeparks = require("themeparks");
 const moment = require('moment-timezone');
 const MongoDB = require('./MongoDB.js')
+const winston = require('winston');
+
+// Logging
+const loggerOptions = {
+  file: {
+	level: 'debug',
+    filename: `./index.log`,
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 2,
+    colorize: false,
+  },
+  console: {
+    level: 'debug',
+    handleExceptions: true,
+    json: false,
+    colorize: true,
+  }
+};
+const logger = winston.createLogger({transports: [new winston.transports.File(loggerOptions.file), new winston.transports.Console(loggerOptions.console)], exitOnError: false});
 
 // Settings
 Themeparks.Settings.Cache = __dirname + "/themeparks.db";
-let DEBUG_MODE;
-let timeTook = 0;
-let refreshRate = 10000;
+let DEBUG_MODE = false;
 
 // Environment Variables
-if (!process.env.ENVIRONMENT) { console.log("No ENV file, quitting."); process.exit(); }
+if (!process.env.ENVIRONMENT) { logger.error("No ENV file, quitting."); process.exit(); }
 if (process.env.ENVIRONMENT == 'dev' || process.env.ENVIRONMENT == 'test') DEBUG_MODE = true; 
 
 // Parks - NOTE: Only create parks ONCE
@@ -35,88 +54,94 @@ class DisneyTimes {
 		return new Promise((resolve,reject) => {
 			if (!this.MongoDB.isConnected()) { this.MongoDB.connect(); }
 		
-			DisneyWorldMagicKingdom.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Magic Kingdom -------------------------------------------------------");
-				
-				 rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`MK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
-					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Magic Kingdom', status:ride.status, waitTime:ride.waitTime});
-				});
-				
-				DEBUG_MODE && console.log('gotmk() complete');
-				resolve(this);
-			}).catch((error) => {
-				console.log("Magic Kingdom GetWaitTimes() failed: " + error);
+			try {
+				DisneyWorldMagicKingdom.GetWaitTimes().then((rideTimes) => {
+					DEBUG_MODE && logger.debug("--- Magic Kingdom -------------------------------------------------------");
+					
+					 rideTimes.forEach((ride) => {
+						DEBUG_MODE && logger.debug(`MK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Magic Kingdom', status:ride.status, waitTime:ride.waitTime});
+					});
+					
+					DEBUG_MODE && logger.debug('GetMK() complete');
+					resolve(this);
+				})
+			}
+			catch (error) {
+				logger.error("Magic Kingdom GetWaitTimes() failed: "+error);
 				reject(this);
-			});
+			}
 		});
 	}
 	GetAK() {
 		return new Promise((resolve,reject) => {
 			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
-			DisneyWorldAnimalKingdom.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Animal Kingdom ------------------------------------------------------");
+			
+			try {
+				DisneyWorldAnimalKingdom.GetWaitTimes().then((rideTimes) => {
+				DEBUG_MODE && logger.debug("--- Animal Kingdom ------------------------------------------------------");
 				rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`AK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+					DEBUG_MODE && logger.debug(`AK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Animal Kingdom', status:ride.status, waitTime:ride.waitTime});
 				});
-				console.log('gotak() complete');
+				DEBUG_MODE && logger.debug('GetAK() complete');
 				resolve(this);
-			}).catch((error) => {
-				DEBUG_MODE && console.log("Animal Kingdom GetWaitTimes() failed: " + error);
+				})
+			}
+			catch (error) {
+				logger.error("Animal Kingdom GetWaitTimes() failed: "+error);
 				reject(this);
-			});
-		
+			}
 		});
 	}
 	GetEpcot() {
 		return new Promise((resolve,reject) => {
 			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
-			DisneyWorldEpcot.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Epcot ---------------------------------------------------------------");
+			
+			try {
+				DisneyWorldEpcot.GetWaitTimes().then((rideTimes) => {
+				DEBUG_MODE && logger.debug("--- Epcot ---------------------------------------------------------------");
 				rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`Epcot: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+					DEBUG_MODE && logger.debug(`Epcot: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Epcot', status:ride.status, waitTime:ride.waitTime});
 				});
-				DEBUG_MODE && console.log('gotepcot() complete');
+				DEBUG_MODE && logger.debug('GetEpcot() complete');
 				resolve(this);
-			}).catch((error) => {
-				console.log("Epcot GetWaitTimes() failed: " + error);
+				})
+			}
+			catch (error) {
+				logger.error("Epcot GetWaitTimes() failed: "+error);
 				reject(this);
-			});
+			}
 		});
 	}
 	GetHS() {
-		if (!this.MongoDB.isConnected()) this.MongoDB.connect();
-		
 		return new Promise((resolve,reject) => {
-			DisneyWorldHollywoodStudios.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Hollywood Studios ---------------------------------------------------");
-				rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`HS: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
-					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Hollywood Studios', status:ride.status, waitTime:ride.waitTime});
-				});
-				DEBUG_MODE && console.log('getHS() complete');
-				resolve(this);
-			}).catch((error) => {
-				console.log("Hollywood Studios GetWaitTimes() failed: " + error);
+			if (!this.MongoDB.isConnected()) { this.MongoDB.connect(); }
+		
+			try {
+				DisneyWorldMagicKingdom.GetWaitTimes().then((rideTimes) => {
+					DEBUG_MODE && logger.debug("--- Hollywood Studios ----------------------------------------------------");
+					
+					 rideTimes.forEach((ride) => {
+						DEBUG_MODE && logger.debug(`HS: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Hollywood Studios', status:ride.status, waitTime:ride.waitTime});
+					});
+					
+					DEBUG_MODE && logger.debug('GetHS() complete');
+					resolve(this);
+				})
+			}
+			catch (error) {
+				logger.error("Hollywood Studios GetWaitTimes() failed: "+error);
 				reject(this);
-			});
+			}
 		});
 	}
 };
 
-//const OurMongo = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
-//const NewDisneyTimes = new GetDisneyTimes(OurMongo);
-//NewDisneyTimes.GetMK().then(() => NewDisneyTimes.GetAK().then(() => NewDisneyTimes.GetEpcot().then(() => NewDisneyTimes.GetHS().then(() => console.log("Done with everything")))));
-//Promise.all([NewDisneyTimes.GetMK(), NewDisneyTimes.GetAK()]).then(() => console.log("done with all"));
-
 module.exports = DisneyTimes;
-
-
-//const OurMongo = new MongoDB('mongodb://'+process.env.MONGO_USER+':'+process.env.MONGO_PASS+'@'+process.env.MONGO_HOST, process.env.MONGO_DBNAME);
-//setInterval(MainDisneyCall, refreshRate); 

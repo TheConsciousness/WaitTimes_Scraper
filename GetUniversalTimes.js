@@ -9,13 +9,34 @@ const dotenv = require('dotenv').config();
 const Themeparks = require("themeparks");
 const moment = require('moment-timezone');
 const MongoDB = require('./MongoDB.js');
+const winston = require('winston');
+
+// Logging
+const loggerOptions = {
+  file: {
+	level: 'debug',
+    filename: `./index.log`,
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 2,
+    colorize: false,
+  },
+  console: {
+    level: 'debug',
+    handleExceptions: true,
+    json: false,
+    colorize: true,
+  }
+};
+const logger = winston.createLogger({transports: [new winston.transports.File(loggerOptions.file), new winston.transports.Console(loggerOptions.console)], exitOnError: false});
 
 // Settings
 Themeparks.Settings.Cache = __dirname + "/themeparks.db";
 let DEBUG_MODE = false;
 
 // Environment Variables
-if (!process.env.ENVIRONMENT) { console.log("No ENV file, quitting."); process.exit(); }
+if (!process.env.ENVIRONMENT) { logger.error("No ENV file, quitting."); process.exit(); }
 if (process.env.ENVIRONMENT == 'dev' || process.env.ENVIRONMENT == 'test') DEBUG_MODE = true; 
 
 // Parks - NOTE: Only create parks ONCE
@@ -33,19 +54,16 @@ class UniversalTimes {
 		return new Promise((resolve,reject) => {
 			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
 			
-			UniversalStudios.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Universal Studios -------------------------------------------------------");
-				rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`USO: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
-					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Universal Studios', status:ride.status, waitTime:ride.waitTime});
-				});
-				DEBUG_MODE && console.log('GetUSO() Complete');
-				resolve(this);
-			}).catch((error) => {
-				console.log("GetUSO GetWaitTimes() failed: " + error);
-				reject(this);
-			});
+				UniversalStudios.GetWaitTimes().then((rideTimes) => {
+					DEBUG_MODE && logger.debug("--- Universal Studios -------------------------------------------------------");
+					rideTimes.forEach((ride) => {
+						DEBUG_MODE && logger.info(`USO: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Universal Studios', status:ride.status, waitTime:ride.waitTime});
+					});
+					DEBUG_MODE && logger.debug('GetUSO() Complete');
+					resolve(this);
+				}).catch((error) => {logger.error(`[${moment().format("MM-DD-YYYY HH:mm:ss")}] GetUSO() failed.`); reject(); });
 		});
 	}
 	GetIOA() {
@@ -53,18 +71,15 @@ class UniversalTimes {
 			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
 			
 			UniversalIslands.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Islands of Adventure ------------------------------------------");
+				DEBUG_MODE && logger.debug("--- Islands of Adventure ------------------------------------------");
 				rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`IOA: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+					DEBUG_MODE && logger.info(`IOA: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
 					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Islands Of Adventure', status:ride.status, waitTime:ride.waitTime});
 				});
-				DEBUG_MODE && console.log('GetIOA() Complete');
+				DEBUG_MODE && logger.debug('GetIOA() Complete');
 				resolve(this);
-			}).catch((error) => {
-				console.log("GetIOA GetWaitTimes() failed: " + error);
-				reject(this);
-			});
+			}).catch((error) => {logger.error(`[${moment().format("MM-DD-YYYY HH:mm:ss")}] GetIOA() failed.`); reject(); });
 		});
 	}
 	GetVB() {
@@ -72,18 +87,15 @@ class UniversalTimes {
 			if (!this.MongoDB.isConnected()) this.MongoDB.connect();
 			
 			VolcanoBay.GetWaitTimes().then((rideTimes) => {
-				DEBUG_MODE && console.log("--- Volcano Bay ------------------------------------------");
-				rideTimes.forEach((ride) => {
-					DEBUG_MODE && console.log(`VB: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
-					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Volcano Bay', status:ride.status, waitTime:ride.waitTime});
-				});
-				DEBUG_MODE && console.log('GetVB() Complete');
-				resolve(this);
-			}).catch((error) => {
-				console.log("GetVB GetWaitTimes() failed: " + error);
-				reject(this);
-			});
+					DEBUG_MODE && logger.debug("--- Volcano Bay ------------------------------------------");
+					rideTimes.forEach((ride) => {
+						DEBUG_MODE && logger.info(`VB: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
+						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Volcano Bay', status:ride.status, waitTime:ride.waitTime});
+					});
+					DEBUG_MODE && logger.debug('GetVB() Complete');
+					resolve(this);
+			}).catch((error) => {logger.error(`[${moment().format("MM-DD-YYYY HH:mm:ss")}] GetVB() failed.`); reject(); });
 		});
 	}
 }
