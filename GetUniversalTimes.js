@@ -59,7 +59,7 @@ class UniversalTimes {
 					rideTimes.forEach((ride) => {
 						DEBUG_MODE && logger.info(`USO: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Universal Studios', status:ride.status, waitTime:ride.waitTime});
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Universal Studios', status:ride.status, waitTime:ride.waitTime});
 					});
 					DEBUG_MODE && logger.debug('GetUSO() Complete');
 					resolve(this);
@@ -75,7 +75,7 @@ class UniversalTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && logger.info(`IOA: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Islands Of Adventure', status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Islands Of Adventure', status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && logger.debug('GetIOA() Complete');
 				resolve(this);
@@ -91,7 +91,7 @@ class UniversalTimes {
 					rideTimes.forEach((ride) => {
 						DEBUG_MODE && logger.info(`VB: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indiana/Indianapolis').format(), park:'Volcano Bay', status:ride.status, waitTime:ride.waitTime});
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Volcano Bay', status:ride.status, waitTime:ride.waitTime});
 					});
 					DEBUG_MODE && logger.debug('GetVB() Complete');
 					resolve(this);

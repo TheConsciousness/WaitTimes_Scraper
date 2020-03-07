@@ -61,7 +61,7 @@ class DisneyTimes {
 					 rideTimes.forEach((ride) => {
 						DEBUG_MODE && logger.debug(`MK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Magic Kingdom', status:ride.status, waitTime:ride.waitTime});
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Magic Kingdom', status:ride.status, waitTime:ride.waitTime});
 					});
 					
 					DEBUG_MODE && logger.debug('GetMK() complete');
@@ -84,7 +84,7 @@ class DisneyTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && logger.debug(`AK: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Animal Kingdom', status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Animal Kingdom', status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && logger.debug('GetAK() complete');
 				resolve(this);
@@ -106,7 +106,7 @@ class DisneyTimes {
 				rideTimes.forEach((ride) => {
 					DEBUG_MODE && logger.debug(`Epcot: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 					let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Epcot', status:ride.status, waitTime:ride.waitTime});
+					this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Epcot', status:ride.status, waitTime:ride.waitTime});
 				});
 				DEBUG_MODE && logger.debug('GetEpcot() complete');
 				resolve(this);
@@ -129,7 +129,7 @@ class DisneyTimes {
 					 rideTimes.forEach((ride) => {
 						DEBUG_MODE && logger.debug(`HS: ${ride.name}: ${ride.waitTime} minutes wait (${ride.status})`);
 						let rideNameParsed = ride.name.replace(/[!-\/:-@[-`{-~]/g, '');
-						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:moment().tz('America/Indianapolis').format(), park:'Hollywood Studios', status:ride.status, waitTime:ride.waitTime});
+						this.MongoDB.insertOne("Rides", {name:rideNameParsed, time:new Date(), park:'Hollywood Studios', status:ride.status, waitTime:ride.waitTime});
 					});
 					
 					DEBUG_MODE && logger.debug('GetHS() complete');
